@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Song" ALTER COLUMN "album" DROP NOT NULL,
+ALTER COLUMN "label" DROP NOT NULL;
