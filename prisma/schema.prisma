@@ -7,18 +7,18 @@ datasource db {
 }
 
 model Song {
-  id Int @id @default(autoincrement())
-  rank Int @unique
-  title String
-  artist String
-  year Int
+  id           Int      @id @default(autoincrement())
+  rank         Int      @unique
+  title        String
+  artist       String
+  year         Int
   year_end_pos Int
-  hot_100_pos Int
-  album String?
-  isEP Boolean @default(false)
-  cover String
-  label String?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  hot_100_pos  Int
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  album        String?
+  cover        String
+  isEP         Boolean  @default(false)
+  genre        String
+  label        String?
 }

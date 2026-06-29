@@ -1,13 +1,8 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import isAuthorized from '@/functions/isAuthorized';
 
 export async function POST(req: NextRequest) {
-  if (!isAuthorized(req)) {
-    return new NextResponse(JSON.stringify({ message: 'Unauthorized' }), { status: 401 });
-  }
-
   try {
     const formData = await req.formData();
     let rank: number,
