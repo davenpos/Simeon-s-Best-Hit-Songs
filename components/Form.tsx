@@ -1,11 +1,12 @@
 'use client';
 import dynamic from 'next/dynamic';
-import { SubmitEvent, useEffect, useState } from 'react';
+import { SubmitEvent, useEffect, useRef, useState } from 'react';
 import FormInput from './FormInput';
 import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
+import { AlertColor } from '@mui/material/Alert';
 
 const Alert = dynamic(() => import('@mui/material/Alert'), { ssr: false });
 
@@ -13,6 +14,10 @@ export default function Form() {
   const [isEP, setIsEP] = useState(false);
   const [alertMounted, setAlertMounted] = useState(false);
   const [alertVisible, setAlertVisible] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [alertSeverity, setAlertSeverity] = useState<AlertColor>('success');
+  const hideTimeoutRef = useRef<number | null>(null);
+  const rafRef = useRef<number | null>(null);
 
   async function onSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -24,12 +29,28 @@ export default function Form() {
       body: formData,
     });
 
-    if (response.ok) {
-      setAlertMounted(true);
-      requestAnimationFrame(() => setAlertVisible(true));
-      setTimeout(() => setAlertVisible(false), 5000);
-      await response.json();
+    const data = await response.json();
+    setAlertMessage(data.message);
+    setAlertSeverity(response.ok ? 'success' : 'error');
+
+    if (hideTimeoutRef.current) {
+      clearTimeout(hideTimeoutRef.current);
     }
+
+    setAlertMounted(true);
+
+    if (rafRef.current) {
+      cancelAnimationFrame(rafRef.current);
+    }
+    rafRef.current = requestAnimationFrame(() => {
+      setAlertVisible(true);
+      rafRef.current = null;
+    });
+
+    hideTimeoutRef.current = window.setTimeout(() => {
+      setAlertVisible(false);
+      hideTimeoutRef.current = null;
+    }, 5000);
   }
 
   useEffect(() => {
@@ -37,6 +58,13 @@ export default function Form() {
     const timeout = setTimeout(() => setAlertMounted(false), 300);
     return () => clearTimeout(timeout);
   }, [alertMounted, alertVisible]);
+
+  useEffect(() => {
+    return () => {
+      if (hideTimeoutRef.current) clearTimeout(hideTimeoutRef.current);
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
+  }, []);
 
   const formLabels = [
     {
@@ -93,8 +121,8 @@ export default function Form() {
         <div
           className={`fixed inset-x-0 top-4 z-50 flex justify-center px-4 transition-all duration-300 ease-out ${alertVisible ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 -translate-y-6 scale-95'}`}
         >
-          <Alert className="w-full max-w-xl" variant="filled" severity="success">
-            Song added successfully!
+          <Alert className="w-full max-w-xl" variant="filled" severity={alertSeverity}>
+            {alertMessage}
           </Alert>
         </div>
       )}
