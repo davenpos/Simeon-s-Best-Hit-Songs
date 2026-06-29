@@ -17,52 +17,42 @@ export default function Form() {
   const [alertMessage, setAlertMessage] = useState('');
   const [alertSeverity, setAlertSeverity] = useState<AlertColor>('success');
   const hideTimeoutRef = useRef<number | null>(null);
-  const rafRef = useRef<number | null>(null);
 
   async function onSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
 
     const formData = new FormData(event.currentTarget);
     formData.set('isEP', isEP.toString());
+
     const response = await fetch('/api/add', {
       method: 'POST',
       body: formData,
     });
 
     const data = await response.json();
-    setAlertMessage(data.message);
+    setAlertMessage(data.message ?? 'Something happened');
     setAlertSeverity(response.ok ? 'success' : 'error');
 
     if (hideTimeoutRef.current) {
       clearTimeout(hideTimeoutRef.current);
     }
 
-    setAlertMounted(true);
-
-    if (rafRef.current) {
-      cancelAnimationFrame(rafRef.current);
-    }
-    rafRef.current = requestAnimationFrame(() => {
-      setAlertVisible(true);
-      rafRef.current = null;
-    });
+    setAlertVisible(true);
 
     hideTimeoutRef.current = window.setTimeout(() => {
       setAlertVisible(false);
       hideTimeoutRef.current = null;
     }, 5000);
-  }
 
-  useEffect(() => {
-    if (!alertMounted || alertVisible) return;
-    const timeout = setTimeout(() => setAlertMounted(false), 300);
-    return () => clearTimeout(timeout);
-  }, [alertMounted, alertVisible]);
+    if (response.ok) {
+      event.target.reset();
+      setIsEP(false);
+    }
+  }
 
   useEffect(() => {
     return () => {
       if (hideTimeoutRef.current) clearTimeout(hideTimeoutRef.current);
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
   }, []);
 
@@ -109,6 +99,11 @@ export default function Form() {
       onChange: () => setIsEP(!isEP),
     },
     {
+      name: 'cover',
+      label: 'Cover:',
+      type: 'text',
+    },
+    {
       name: 'label',
       label: 'Label:',
       type: 'text',
@@ -119,7 +114,11 @@ export default function Form() {
     <>
       {alertMounted && (
         <div
-          className={`fixed inset-x-0 top-4 z-50 flex justify-center px-4 transition-all duration-300 ease-out ${alertVisible ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 -translate-y-6 scale-95'}`}
+          className={`fixed inset-x-0 top-4 z-50 flex justify-center px-4 transition-all duration-300 ease-out ${
+            alertVisible
+              ? 'opacity-100 translate-y-0 scale-100'
+              : 'opacity-0 -translate-y-6 scale-95 pointer-events-none'
+          }`}
         >
           <Alert className="w-full max-w-xl" variant="filled" severity={alertSeverity}>
             {alertMessage}

@@ -12,8 +12,9 @@ export async function POST(req: NextRequest) {
       year_end_pos: number,
       hot_100_pos: number,
       album: string,
-      label: string,
-      isEP: boolean;
+      isEP: boolean,
+      cover: string,
+      label: string;
 
     if (!!formData.get('title')) {
       title = formData.get('title') as string;
@@ -44,8 +45,37 @@ export async function POST(req: NextRequest) {
     }
 
     album = !!formData.get('album') ? (formData.get('album') as string) : 'Non-album single';
-    label = !!formData.get('label') ? (formData.get('label') as string) : 'Self-released';
     isEP = formData.get('isEP') === 'true';
+
+    if (!!formData.get('cover')) {
+      cover = formData.get('cover') as string;
+    } else return new NextResponse(JSON.stringify({ message: 'Missing cover' }), { status: 400 });
+
+    label = !!formData.get('label') ? (formData.get('label') as string) : 'Self-released';
+
+    await prisma.$transaction(async (tx) => {
+      rank = parseInt(formData.get('rank') as string, 10);
+
+      if (!rank) {
+        const highest = await tx.song.findFirst({
+          orderBy: {
+            rank: 'desc',
+          },
+        });
+
+        rank = highest ? highest.rank + 1 : 1;
+      } else {
+        await tx.$executeRaw`
+          UPDATE "Song"
+          SET rank = rank + 1
+          WHERE rank >= ${rank}
+        `;
+      }
+
+      await tx.song.create({
+        data: { rank, title, artist, year, year_end_pos, hot_100_pos, album, cover, label, isEP },
+      });
+    });
 
     return new NextResponse(
       JSON.stringify({
