@@ -14,6 +14,7 @@ export async function POST(req: NextRequest) {
       album: string,
       isEP: boolean,
       cover: string,
+      genre: string,
       label: string;
 
     if (!!formData.get('title')) {
@@ -51,6 +52,10 @@ export async function POST(req: NextRequest) {
       cover = formData.get('cover') as string;
     } else return new NextResponse(JSON.stringify({ message: 'Missing cover' }), { status: 400 });
 
+    if (!!formData.get('genre')) {
+      genre = formData.get('genre') as string;
+    } else return new NextResponse(JSON.stringify({ message: 'Missing genre' }), { status: 400 });
+
     label = !!formData.get('label') ? (formData.get('label') as string) : 'Self-released';
 
     await prisma.$transaction(async (tx) => {
@@ -73,7 +78,19 @@ export async function POST(req: NextRequest) {
       }
 
       await tx.song.create({
-        data: { rank, title, artist, year, year_end_pos, hot_100_pos, album, cover, label, isEP },
+        data: {
+          rank,
+          title,
+          artist,
+          year,
+          year_end_pos,
+          hot_100_pos,
+          album,
+          cover,
+          genre,
+          label,
+          isEP,
+        },
       });
     });
 

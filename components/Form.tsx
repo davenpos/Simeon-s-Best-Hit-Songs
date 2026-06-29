@@ -103,6 +103,11 @@ export default function Form() {
       type: 'text',
     },
     {
+      name: 'genre',
+      label: 'Genre:',
+      type: 'text',
+    },
+    {
       name: 'label',
       label: 'Label:',
       type: 'text',
