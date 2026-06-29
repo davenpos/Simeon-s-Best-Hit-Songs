@@ -12,7 +12,6 @@ const Alert = dynamic(() => import('@mui/material/Alert'), { ssr: false });
 
 export default function Form() {
   const [isEP, setIsEP] = useState(false);
-  const [alertMounted, setAlertMounted] = useState(false);
   const [alertVisible, setAlertVisible] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
   const [alertSeverity, setAlertSeverity] = useState<AlertColor>('success');
@@ -112,19 +111,17 @@ export default function Form() {
 
   return (
     <>
-      {alertMounted && (
-        <div
-          className={`fixed inset-x-0 top-4 z-50 flex justify-center px-4 transition-all duration-300 ease-out ${
-            alertVisible
-              ? 'opacity-100 translate-y-0 scale-100'
-              : 'opacity-0 -translate-y-6 scale-95 pointer-events-none'
-          }`}
-        >
-          <Alert className="w-full max-w-xl" variant="filled" severity={alertSeverity}>
-            {alertMessage}
-          </Alert>
-        </div>
-      )}
+      <div
+        className={`fixed inset-x-0 top-4 z-50 flex justify-center px-4 transition-all duration-300 ease-out ${
+          alertVisible
+            ? 'opacity-100 translate-y-0 scale-100'
+            : 'opacity-0 -translate-y-6 scale-95 pointer-events-none'
+        }`}
+      >
+        <Alert className="w-full max-w-xl" variant="filled" severity={alertSeverity}>
+          {alertMessage}
+        </Alert>
+      </div>
       <form
         onSubmit={onSubmit}
         className="rounded-lg bg-lime-300 grid grid-cols-2 max-w-2xl m-auto p-2 gap-y-2"
