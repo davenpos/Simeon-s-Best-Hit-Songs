@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import bcrypt from 'bcryptjs';
 
 export function middleware(req: NextRequest) {
   const authHeader = req.headers.get('authorization');
@@ -14,13 +15,17 @@ export function middleware(req: NextRequest) {
 
   try {
     const encodedCredentials = authHeader.split(' ')[1];
-    const decodedCredentials = atob(encodedCredentials);
+    const decodedCredentials = Buffer.from(encodedCredentials, 'base64').toString('utf8');
     const index = decodedCredentials.indexOf(':');
     const username = decodedCredentials.slice(0, index);
     const typedPassword = decodedCredentials.slice(index + 1);
 
-    if (username !== process.env.ADMIN_USERNAME || typedPassword !== process.env.ADMIN_PASSWORD) {
-      console.log(username, process.env.ADMIN_USERNAME, typedPassword, process.env.ADMIN_PASSWORD);
+    console.log(process.env.ADMIN_PASSWORD_HASH);
+
+    if (
+      username !== process.env.ADMIN_USERNAME ||
+      !bcrypt.compareSync(typedPassword, process.env.ADMIN_PASSWORD_HASH)
+    ) {
       return new NextResponse('Invalid credentials', {
         status: 401,
         headers: {
