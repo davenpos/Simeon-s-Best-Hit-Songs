@@ -20,8 +20,6 @@ export function middleware(req: NextRequest) {
     const username = decodedCredentials.slice(0, index);
     const typedPassword = decodedCredentials.slice(index + 1);
 
-    console.log(process.env.ADMIN_PASSWORD_HASH);
-
     if (
       username !== process.env.ADMIN_USERNAME ||
       !bcrypt.compareSync(typedPassword, process.env.ADMIN_PASSWORD_HASH)

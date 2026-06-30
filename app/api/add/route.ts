@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
       year_end_pos: number,
       hot_100_pos: number,
       album: string,
-      isEP: boolean,
+      albumNote: string,
       cover: string,
       genre: string,
       label: string;
@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
     }
 
     album = !!formData.get('album') ? (formData.get('album') as string) : 'Non-album single';
-    isEP = formData.get('isEP') === 'true';
+    albumNote = formData.get('albumNote') as string;
 
     if (!!formData.get('cover')) {
       cover = formData.get('cover') as string;
@@ -86,10 +86,10 @@ export async function POST(req: NextRequest) {
           year_end_pos,
           hot_100_pos,
           album,
+          albumNote,
           cover,
           genre,
           label,
-          isEP,
         },
       });
     });

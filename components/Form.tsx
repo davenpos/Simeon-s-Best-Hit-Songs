@@ -11,7 +11,6 @@ import { AlertColor } from '@mui/material/Alert';
 const Alert = dynamic(() => import('@mui/material/Alert'), { ssr: false });
 
 export default function Form() {
-  const [isEP, setIsEP] = useState(false);
   const [alertVisible, setAlertVisible] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
   const [alertSeverity, setAlertSeverity] = useState<AlertColor>('success');
@@ -21,7 +20,6 @@ export default function Form() {
     event.preventDefault();
 
     const formData = new FormData(event.currentTarget);
-    formData.set('isEP', isEP.toString());
 
     const response = await fetch('/api/add', {
       method: 'POST',
@@ -43,10 +41,7 @@ export default function Form() {
       hideTimeoutRef.current = null;
     }, 5000);
 
-    if (response.ok) {
-      event.target.reset();
-      setIsEP(false);
-    }
+    if (response.ok) event.target.reset();
   }
 
   useEffect(() => {
@@ -92,10 +87,9 @@ export default function Form() {
       type: 'text',
     },
     {
-      name: 'isEP',
-      label: 'Is EP:',
-      type: 'checkbox',
-      onChange: () => setIsEP(!isEP),
+      name: 'albumNote',
+      label: 'Album note:',
+      type: 'text',
     },
     {
       name: 'cover',
