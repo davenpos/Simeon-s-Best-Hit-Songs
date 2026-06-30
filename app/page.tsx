@@ -1,5 +1,6 @@
 import SongTable from '@/components/SongTable';
 import { prisma } from '@/lib/prisma';
+import { withContextualRanks } from '@/lib/songRanks';
 
 export default async function Page() {
   const songs = await prisma.song.findMany({
@@ -8,5 +9,7 @@ export default async function Page() {
     },
   });
 
-  return <SongTable songs={songs} />;
+  const songsWithRanks = await withContextualRanks(songs);
+
+  return <SongTable songs={songsWithRanks} />;
 }

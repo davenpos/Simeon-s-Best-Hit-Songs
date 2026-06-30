@@ -1,5 +1,7 @@
 export interface SongDetails {
   rank: number;
+  rankInYear: number;
+  rankInDecade: number;
   title: string;
   artist: string;
   year: number;

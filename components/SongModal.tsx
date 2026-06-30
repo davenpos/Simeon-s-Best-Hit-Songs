@@ -54,6 +54,16 @@ export default function SongModal({
             </h2>
             <p className="text-lg">{song.artist}</p>
             <div className="flex">
+              <dt className="text-sm font-medium text-lime-700">Rank in year:</dt>
+              &nbsp;
+              <dd className="text-sm">#{song.rankInYear}</dd>
+            </div>
+            <div className="flex">
+              <dt className="text-sm font-medium text-lime-700">Rank in decade:</dt>
+              &nbsp;
+              <dd className="text-sm">#{song.rankInDecade}</dd>
+            </div>
+            <div className="flex">
               <dt className="text-sm font-medium text-lime-700">Rank in all-time:</dt>
               &nbsp;
               <dd className="text-sm">#{song.rank}</dd>
