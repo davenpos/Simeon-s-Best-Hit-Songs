@@ -11,5 +11,14 @@ export default async function Page() {
 
   const songsWithRanks = await withContextualRanks(songs);
 
-  return <SongTable songs={songsWithRanks} />;
+  return (
+    <>
+      <header className="mb-8 text-center sm:mb-10">
+        <h1 className="text-4xl font-bold tracking-tight text-white drop-shadow-sm sm:text-5xl">
+          Simeon&apos;s Best Hit Songs
+        </h1>
+      </header>
+      <SongTable songs={songsWithRanks} />
+    </>
+  );
 }
