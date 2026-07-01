@@ -16,4 +16,6 @@ export interface SongDetails {
 
 export interface SongTableProps {
   songs: SongDetails[];
+  blockInteractions?: boolean;
+  onModalActiveChange?: (isActive: boolean) => void;
 }

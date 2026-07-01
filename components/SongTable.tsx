@@ -3,12 +3,21 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import SongModal from './SongModal';
 import { SongDetails, SongTableProps } from '@/types/interfaces';
 
-export default function SongTable({ songs }: SongTableProps) {
+export default function SongTable({
+  songs,
+  blockInteractions = false,
+  onModalActiveChange,
+}: SongTableProps) {
   const [selectedSong, setSelectedSong] = useState<SongDetails | null>(null);
   const [isClosing, setIsClosing] = useState(false);
   const closeTimeoutRef = useRef<number | null>(null);
 
-  const isModalActive = selectedSong !== null;
+  const isSongModalActive = selectedSong !== null;
+  const interactionsBlocked = isSongModalActive || blockInteractions;
+
+  useEffect(() => {
+    onModalActiveChange?.(isSongModalActive);
+  }, [isSongModalActive, onModalActiveChange]);
 
   useEffect(() => {
     return () => {
@@ -29,7 +38,7 @@ export default function SongTable({ songs }: SongTableProps) {
   }, [selectedSong, isClosing]);
 
   function handleRowClick(song: SongDetails) {
-    if (isModalActive) return;
+    if (interactionsBlocked) return;
     setSelectedSong(song);
     setIsClosing(false);
   }
@@ -90,7 +99,7 @@ export default function SongTable({ songs }: SongTableProps) {
                 </th>
               </tr>
             </thead>
-            <tbody className={isModalActive ? 'pointer-events-none' : undefined}>
+            <tbody className={interactionsBlocked ? 'pointer-events-none' : undefined}>
               {songs.map((song, index) => (
                 <tr
                   key={song.rank}
@@ -98,7 +107,7 @@ export default function SongTable({ songs }: SongTableProps) {
                   className={`border-b border-white/10 transition-colors duration-200 last:border-b-0 ${
                     index % 2 === 1 ? 'bg-black/5' : ''
                   } ${
-                    isModalActive
+                    interactionsBlocked
                       ? 'cursor-default'
                       : 'cursor-pointer hover:bg-white/15 active:bg-white/20'
                   }`}
