@@ -1,5 +1,4 @@
 'use client';
-
 import CloseIcon from '@mui/icons-material/Close';
 import { ReactNode, useEffect, useState } from 'react';
 

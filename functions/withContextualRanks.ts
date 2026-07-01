@@ -11,7 +11,7 @@ function buildRankMap(songs: { rank: number }[]): Map<number, number> {
   return positions;
 }
 
-export async function withContextualRanks(
+export default async function withContextualRanks(
   songs: Omit<SongDetails, 'rankInYear' | 'rankInDecade'>[],
 ): Promise<SongDetails[]> {
   const years = [...new Set(songs.map((song) => song.year))];

@@ -1,5 +1,4 @@
 'use client';
-
 import { SongDetails } from '@/types/interfaces';
 import { Fragment } from 'react';
 import Modal from './Modal';
@@ -71,8 +70,7 @@ export default function SongModal({
                 {songAlbums.map((album, i) => (
                   <Fragment key={i}>
                     <span className="italic">{album}</span>
-                    {song.albumNote ? ` (${song.albumNote})` : ''}
-                    {i > 0 && <>/</>}
+                    {i > 0 ? <>/</> : <>{song.albumNote ? ` (${song.albumNote})` : ''}</>}
                   </Fragment>
                 ))}
               </>

@@ -78,10 +78,10 @@ export default function AboutModal({
             I've also added functionality that allows users to view my top 100 favorite hit songs of
             a particular decade and top 20 favorite hit songs of a particular year. You can even use
             the search button to search for a certain song or artist and see if your favorite artist
-            or hit song has any songs in my top 1000. You can also click on a song to view more
-            information on it. And of course, if I've done a best hit songs video of the year-end
-            chart it was on, assuming it was on the list or an honorable mention, you can watch that
-            to hear my detailed thoughts on the song.
+            or hit song has any songs in my top 1000. You can also click on a song in the table to
+            view more information on it. And of course, if I've done a best hit songs video of the
+            year-end chart it was on, assuming it was on the list or an honorable mention, you can
+            watch that to hear my detailed thoughts on the song.
           </p>
           <p>
             I hope you enjoy checking out this site and seeing my thoughts on various popular music

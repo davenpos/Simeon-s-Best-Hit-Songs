@@ -1,6 +1,6 @@
 import HomeContent from '@/components/HomeContent';
 import { prisma } from '@/lib/prisma';
-import { withContextualRanks } from '@/lib/songRanks';
+import withContextualRanks from '@/functions/withContextualRanks';
 
 export default async function Page() {
   const songs = await prisma.song.findMany({
