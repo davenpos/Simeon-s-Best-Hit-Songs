@@ -1,12 +1,14 @@
 'use client';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import AboutModal from './AboutModal';
+import Pagination from './Pagination';
 import SongTable from './SongTable';
 import getDecadeStart from '@/functions/getDecadeStart';
 import { SongDetails, SongTableProps } from '@/types/interfaces';
 
 const DECADES = ['1990s', '2000s', '2010s'] as const;
 const BASE_TIME_BUTTONS = ['All-time', ...DECADES];
+const PAGE_SIZE = 20;
 
 function getYearButtonsForDecade(decadeLabel: string) {
   const decadeStart = parseInt(decadeLabel.slice(0, -1), 10);
@@ -32,6 +34,18 @@ function filterSongsByTimeId(songs: SongDetails[], selectedTimeId: string) {
   return songs;
 }
 
+function getSongLimit(selectedTimeId: string) {
+  if (selectedTimeId === 'All-time') return 1000;
+  if (DECADES.includes(selectedTimeId as (typeof DECADES)[number])) return 100;
+  return 20;
+}
+
+function isPaginatedView(selectedTimeId: string) {
+  return (
+    selectedTimeId === 'All-time' || DECADES.includes(selectedTimeId as (typeof DECADES)[number])
+  );
+}
+
 export default function HomeContent({ songs }: SongTableProps) {
   const closeTimeoutRef = useRef<number | null>(null);
 
@@ -39,6 +53,7 @@ export default function HomeContent({ songs }: SongTableProps) {
   const [isAboutClosing, setIsAboutClosing] = useState(false);
   const [isSongModalActive, setIsSongModalActive] = useState(false);
   const [selectedTimeId, setSelectedTimeId] = useState('All-time');
+  const [currentPage, setCurrentPage] = useState(1);
 
   const visibleTimeButtons = useMemo(() => {
     if (selectedTimeId === 'All-time') {
@@ -58,12 +73,33 @@ export default function HomeContent({ songs }: SongTableProps) {
     return BASE_TIME_BUTTONS;
   }, [selectedTimeId]);
 
-  const filteredSongs = useMemo(
-    () => filterSongsByTimeId(songs, selectedTimeId),
-    [songs, selectedTimeId],
-  );
+  const limitedSongs = useMemo(() => {
+    const filtered = filterSongsByTimeId(songs, selectedTimeId);
+    return filtered.slice(0, getSongLimit(selectedTimeId));
+  }, [songs, selectedTimeId]);
+
+  const totalPages = useMemo(() => {
+    if (!isPaginatedView(selectedTimeId)) return 1;
+    return Math.max(1, Math.ceil(limitedSongs.length / PAGE_SIZE));
+  }, [limitedSongs.length, selectedTimeId]);
+
+  const paginatedSongs = useMemo(() => {
+    if (!isPaginatedView(selectedTimeId)) return limitedSongs;
+    const start = (currentPage - 1) * PAGE_SIZE;
+    return limitedSongs.slice(start, start + PAGE_SIZE);
+  }, [currentPage, limitedSongs, selectedTimeId]);
+
+  const rankOffset = isPaginatedView(selectedTimeId) ? (currentPage - 1) * PAGE_SIZE : 0;
 
   const isAnyModalActive = isAboutOpen || isSongModalActive;
+
+  useEffect(() => setCurrentPage(1), [selectedTimeId]);
+
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, totalPages]);
 
   useEffect(() => {
     return () => {
@@ -128,9 +164,17 @@ export default function HomeContent({ songs }: SongTableProps) {
       </header>
 
       <SongTable
-        songs={filteredSongs}
+        songs={paginatedSongs}
+        rankOffset={rankOffset}
         blockInteractions={isAboutOpen}
         onModalActiveChange={setIsSongModalActive}
+      />
+
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+        disabled={isAnyModalActive}
       />
 
       {isAboutOpen && <AboutModal isClosing={isAboutClosing} onClose={closeAboutModal} />}

@@ -35,6 +35,7 @@ export interface SongDetails {
 
 export interface SongTableProps {
   songs: SongDetails[];
+  rankOffset?: number;
   blockInteractions?: boolean;
   onModalActiveChange?: (isActive: boolean) => void;
 }
