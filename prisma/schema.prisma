@@ -15,7 +15,7 @@ model Song {
   year_end_pos Int
   hot_100_pos  Int
   createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  updatedAt    DateTime @updatedAt @default(now())
   album        String?
   albumNote    String?
   cover        String

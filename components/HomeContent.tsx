@@ -10,8 +10,7 @@ export default function HomeContent({ songs }: SongTableProps) {
   const [isSongModalActive, setIsSongModalActive] = useState(false);
   const closeTimeoutRef = useRef<number | null>(null);
 
-  const isAboutActive = isAboutOpen;
-  const isAnyModalActive = isAboutActive || isSongModalActive;
+  const isAnyModalActive = isAboutOpen || isSongModalActive;
 
   useEffect(() => {
     return () => {
@@ -37,6 +36,8 @@ export default function HomeContent({ songs }: SongTableProps) {
     setIsAboutClosing(false);
   }
 
+  //https://react.dev/learn/updating-arrays-in-state
+
   return (
     <>
       <header className="text-center">
@@ -57,7 +58,7 @@ export default function HomeContent({ songs }: SongTableProps) {
 
       <SongTable
         songs={songs}
-        blockInteractions={isAboutActive}
+        blockInteractions={isAboutOpen}
         onModalActiveChange={setIsSongModalActive}
       />
 

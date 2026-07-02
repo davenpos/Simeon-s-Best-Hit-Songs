@@ -8,11 +8,6 @@ import Modal from './Modal';
 import { useAlert } from '@/hooks/useAlert';
 import { AdminSong, AdminSongListProps } from '@/types/interfaces';
 
-const INSERT_HEIGHT = 32;
-const SONG_HEIGHT = 48;
-const LONG_PRESS_MS = 400;
-const OVERSCAN = 8;
-
 type ListItem =
   | { type: 'insert'; rank: number; key: string }
   | { type: 'song'; song: AdminSong; key: string };
@@ -20,9 +15,7 @@ type ListItem =
 type FormState = { mode: 'add'; rank: number } | { mode: 'edit'; song: AdminSong };
 
 function buildListItems(songs: AdminSong[]): ListItem[] {
-  if (songs.length === 0) {
-    return [{ type: 'insert', rank: 1, key: 'insert-1' }];
-  }
+  if (songs.length === 0) return [{ type: 'insert', rank: 1, key: 'insert-1' }];
 
   const items: ListItem[] = [];
 
@@ -41,7 +34,7 @@ function buildListItems(songs: AdminSong[]): ListItem[] {
 }
 
 function getItemHeight(item: ListItem) {
-  return item.type === 'insert' ? INSERT_HEIGHT : SONG_HEIGHT;
+  return item.type === 'insert' ? 32 : 48;
 }
 
 function findStartIndex(offsets: number[], heights: number[], scrollTop: number) {
@@ -101,14 +94,12 @@ export default function AdminSongList({ initialSongs }: AdminSongListProps) {
   }, [items]);
 
   const visibleRange = useMemo(() => {
-    if (items.length === 0) {
-      return { start: 0, end: 0 };
-    }
+    if (items.length === 0) return { start: 0, end: 0 };
 
-    const start = Math.max(0, findStartIndex(offsets, heights, scrollTop) - OVERSCAN);
+    const start = Math.max(0, findStartIndex(offsets, heights, scrollTop) - 8);
     const end = Math.min(
       items.length,
-      findStartIndex(offsets, heights, scrollTop + viewportHeight) + OVERSCAN + 1,
+      findStartIndex(offsets, heights, scrollTop + viewportHeight) + 9,
     );
 
     return { start, end };
@@ -213,11 +204,9 @@ export default function AdminSongList({ initialSongs }: AdminSongListProps) {
     const zone = document
       .elementFromPoint(event.clientX, event.clientY)
       ?.closest('[data-insert-rank]');
-    if (zone) {
-      setDragOverRank(parseInt(zone.getAttribute('data-insert-rank')!, 10));
-    } else {
-      setDragOverRank(null);
-    }
+
+    if (zone) setDragOverRank(parseInt(zone.getAttribute('data-insert-rank')!, 10));
+    else setDragOverRank(null);
   }, []);
 
   useEffect(() => {
@@ -311,7 +300,7 @@ export default function AdminSongList({ initialSongs }: AdminSongListProps) {
       pendingSongRef.current = song;
       setDraggingSong(song);
       document.body.classList.add('select-none');
-    }, LONG_PRESS_MS);
+    }, 400);
   }
 
   return (

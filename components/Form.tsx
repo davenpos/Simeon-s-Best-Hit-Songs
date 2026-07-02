@@ -1,5 +1,4 @@
 'use client';
-
 import { SubmitEvent } from 'react';
 import FormInput from './FormInput';
 import { AlertColor } from '@mui/material/Alert';
@@ -45,9 +44,7 @@ export default function Form({
     const data = await response.json();
     onNotify?.(data.message ?? 'Something happened', response.ok ? 'success' : 'error');
 
-    if (response.ok) {
-      onSuccess?.();
-    }
+    if (response.ok) onSuccess?.();
   }
 
   const defaults =
