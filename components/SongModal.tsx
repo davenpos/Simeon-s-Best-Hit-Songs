@@ -20,7 +20,7 @@ export default function SongModal({
         <img
           src={song.cover}
           alt={`${song.title} cover`}
-          className="mx-auto h-40 w-40 shrink-0 rounded-md object-cover sm:mx-0"
+          className="mx-auto h-40 w-40 shrink-0 rounded-md sm:mx-0"
         />
         <div className="min-w-0 flex-1 pr-8">
           <h2 id="song-modal-title" className="text-xl font-bold">

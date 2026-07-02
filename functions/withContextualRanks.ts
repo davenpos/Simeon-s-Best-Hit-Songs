@@ -1,9 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import type { SongDetails } from '@/types/interfaces';
-
-function getDecadeStart(year: number) {
-  return Math.floor(year / 10) * 10;
-}
+import getDecadeStart from './getDecadeStart';
 
 function buildRankMap(songs: { rank: number }[]): Map<number, number> {
   const positions = new Map<number, number>();
