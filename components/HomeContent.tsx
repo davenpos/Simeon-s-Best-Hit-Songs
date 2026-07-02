@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import AboutModal from './AboutModal';
 import SongTable from './SongTable';
 import getDecadeStart from '@/functions/getDecadeStart';
-import { SongTableProps } from '@/types/interfaces';
+import { SongDetails, SongTableProps } from '@/types/interfaces';
 
 const DECADES = ['1990s', '2000s', '2010s'] as const;
 const BASE_TIME_BUTTONS = ['All-time', ...DECADES];
@@ -11,6 +11,25 @@ const BASE_TIME_BUTTONS = ['All-time', ...DECADES];
 function getYearButtonsForDecade(decadeLabel: string) {
   const decadeStart = parseInt(decadeLabel.slice(0, -1), 10);
   return Array.from({ length: 10 }, (_, index) => String(decadeStart + index));
+}
+
+function filterSongsByTimeId(songs: SongDetails[], selectedTimeId: string) {
+  if (selectedTimeId === 'All-time') {
+    return songs;
+  }
+
+  if (DECADES.includes(selectedTimeId as (typeof DECADES)[number])) {
+    const decadeStart = parseInt(selectedTimeId.slice(0, -1), 10);
+    const decadeEnd = decadeStart + 9;
+    return songs.filter((song) => song.year >= decadeStart && song.year <= decadeEnd);
+  }
+
+  const year = parseInt(selectedTimeId, 10);
+  if (!Number.isNaN(year)) {
+    return songs.filter((song) => song.year === year);
+  }
+
+  return songs;
 }
 
 export default function HomeContent({ songs }: SongTableProps) {
@@ -38,6 +57,11 @@ export default function HomeContent({ songs }: SongTableProps) {
 
     return BASE_TIME_BUTTONS;
   }, [selectedTimeId]);
+
+  const filteredSongs = useMemo(
+    () => filterSongsByTimeId(songs, selectedTimeId),
+    [songs, selectedTimeId],
+  );
 
   const isAnyModalActive = isAboutOpen || isSongModalActive;
 
@@ -104,7 +128,7 @@ export default function HomeContent({ songs }: SongTableProps) {
       </header>
 
       <SongTable
-        songs={songs}
+        songs={filteredSongs}
         blockInteractions={isAboutOpen}
         onModalActiveChange={setIsSongModalActive}
       />
