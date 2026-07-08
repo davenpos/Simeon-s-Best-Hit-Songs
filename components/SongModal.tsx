@@ -40,7 +40,7 @@ export default function SongModal({
           <div className="flex">
             <dt className="text-sm font-medium text-lime-700">Rank in all-time:</dt>
             &nbsp;
-            <dd className="text-sm">#{song.rank}</dd>
+            <dd className="text-sm">{song.rank <= 1000 ? <>#{song.rank}</> : <>&gt;#1000</>}</dd>
           </div>
         </div>
       </div>
