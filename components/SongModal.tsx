@@ -2,6 +2,7 @@
 import { SongDetails } from '@/types/interfaces';
 import { Fragment } from 'react';
 import Modal from './Modal';
+import SongDetail from './SongDetail';
 
 export default function SongModal({
   song,
@@ -27,62 +28,55 @@ export default function SongModal({
             {song.title}
           </h2>
           <p className="text-lg">{song.artist}</p>
-          <div className="flex">
-            <dt className="text-sm font-medium text-lime-700">Rank in year:</dt>
-            &nbsp;
-            <dd className="text-sm">#{song.rankInYear}</dd>
-          </div>
-          <div className="flex">
-            <dt className="text-sm font-medium text-lime-700">Rank in decade:</dt>
-            &nbsp;
-            <dd className="text-sm">#{song.rankInDecade}</dd>
-          </div>
-          <div className="flex">
-            <dt className="text-sm font-medium text-lime-700">Rank in all-time:</dt>
-            &nbsp;
-            <dd className="text-sm">{song.rank <= 1000 ? <>#{song.rank}</> : <>&gt;#1000</>}</dd>
-          </div>
+          <SongDetail
+            term="Rank in year"
+            details={`#${song.rankInYear}`}
+            className="flex"
+            rank={true}
+          />
+          <SongDetail
+            term="Rank in decade"
+            details={`#${song.rankInDecade}`}
+            className="flex"
+            rank={true}
+          />
+          <SongDetail
+            term="Rank in all-time"
+            details={song.rank <= 1000 ? `#${song.rank}` : '>#1000'}
+            className="flex"
+            rank={true}
+          />
         </div>
       </div>
 
       <dl className="mt-4 grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
-        <div>
-          <dt className="font-medium text-lime-700">Year:</dt>
-          <dd>{song.year}</dd>
-        </div>
-        <div>
-          <dt className="font-medium text-lime-700">Genre:</dt>
-          <dd>{song.genre}</dd>
-        </div>
-        <div>
-          <dt className="font-medium text-lime-700">Year-end position:</dt>
-          <dd>#{song.year_end_pos}</dd>
-        </div>
-        <div>
-          <dt className="font-medium text-lime-700">Hot 100 peak:</dt>
-          <dd>#{song.hot_100_pos}</dd>
-        </div>
-        <div className="col-span-2">
-          <dt className="font-medium text-lime-700">Album:</dt>
-          <dd>
-            {songAlbums.length ? (
+        <SongDetail term="Year" details={song.year} />
+        <SongDetail term="Genre" details={song.genre} />
+        <SongDetail term="Year-end position" details={`#${song.year_end_pos}`} />
+        <SongDetail term="Year-end position" details={`#${song.hot_100_pos}`} />
+        <SongDetail
+          term="Album"
+          details={
+            songAlbums.length ? (
               <>
                 {songAlbums.map((album, i) => (
                   <Fragment key={i}>
-                    <span className="italic">{album}</span>
                     {i > 0 ? <>/</> : <>{song.albumNote ? ` (${song.albumNote})` : ''}</>}
+                    <span className="italic">{album}</span>
                   </Fragment>
                 ))}
               </>
             ) : (
               <>Non-album single</>
-            )}
-          </dd>
-        </div>
-        <div className="col-span-2">
-          <dt className="font-medium text-lime-700">Label:</dt>
-          <dd>{song.label ? song.label : 'Self-released'}</dd>
-        </div>
+            )
+          }
+          className="col-span-2"
+        />
+        <SongDetail
+          term="Label"
+          details={song.label ? song.label : 'Self-released'}
+          className="col-span-2"
+        />
       </dl>
     </Modal>
   );
