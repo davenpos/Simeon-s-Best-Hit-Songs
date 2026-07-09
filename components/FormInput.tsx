@@ -18,7 +18,7 @@ export default function FormInput({
         type={type}
         name={name}
         id={name}
-        defaultValue={defaultValue}
+        {...(type !== 'file' ? { defaultValue } : {})}
         className="bg-white text-black px-1"
       />
     </>

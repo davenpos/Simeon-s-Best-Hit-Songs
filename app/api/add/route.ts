@@ -6,7 +6,7 @@ import { prisma } from '@/lib/prisma';
 export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
-    const parsed = parseSongFormData(formData);
+    const parsed = await parseSongFormData(formData);
     if (parsed.ok === false) return parsed.response;
 
     const {

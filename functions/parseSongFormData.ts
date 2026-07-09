@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import uploadToCloudinary from '@/functions/cloudinaryUpload';
 
 interface ParsedSongFields {
   title: string;
@@ -13,9 +14,9 @@ interface ParsedSongFields {
   label: string;
 }
 
-export default function parseSongFormData(
+export default async function parseSongFormData(
   formData: FormData,
-): { ok: true; data: ParsedSongFields } | { ok: false; response: NextResponse } {
+): Promise<{ ok: true; data: ParsedSongFields } | { ok: false; response: NextResponse }> {
   let title: string;
   let artist: string;
   let year: number;
@@ -69,12 +70,16 @@ export default function parseSongFormData(
     };
   }
 
-  if (!!formData.get('cover')) {
-    cover = formData.get('cover') as string;
-  } else {
+  const coverFile = formData.get('cover');
+  const existingCover = formData.get('existingCover') as string | null;
+
+  if (coverFile instanceof File && coverFile.size > 0) {
+    cover = await uploadToCloudinary(coverFile);
+  } else if (existingCover) cover = existingCover;
+  else {
     return {
       ok: false,
-      response: NextResponse.json({ message: 'Missing cover' }, { status: 400 }),
+      response: NextResponse.json({ message: 'Missing cover image' }, { status: 400 }),
     };
   }
 
