@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 
-export function middleware(req: NextRequest) {
+export function proxy(req: NextRequest) {
   const authHeader = req.headers.get('authorization');
 
   if (!authHeader || !authHeader.startsWith('Basic ')) {
