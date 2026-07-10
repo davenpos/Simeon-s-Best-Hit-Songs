@@ -12,7 +12,7 @@ const formFields = [
   { name: 'hot_100_pos', label: 'Hot 100 peak:', type: 'number' as const },
   { name: 'album', label: 'Album:', type: 'text' as const },
   { name: 'albumNote', label: 'Album note:', type: 'text' as const },
-  { name: 'cover', label: 'Cover:', type: 'file' as const },
+  { name: 'coverURL', label: 'Cover:', type: 'file' as const },
   { name: 'genre', label: 'Genre:', type: 'text' as const },
   { name: 'label', label: 'Label:', type: 'text' as const },
 ];
@@ -57,7 +57,6 @@ export default function Form({
           hot_100_pos: initialSong.hot_100_pos,
           album: initialSong.album ?? '',
           albumNote: initialSong.albumNote ?? '',
-          cover: initialSong.cover,
           genre: initialSong.genre,
           label: initialSong.label ?? '',
         }
@@ -66,9 +65,12 @@ export default function Form({
   return (
     <form onSubmit={onSubmit} className="grid grid-cols-2 gap-y-2 pr-8">
       {mode === 'add' && rank !== undefined && <input type="hidden" name="rank" value={rank} />}
-      {mode === 'edit' && initialSong && <input type="hidden" name="id" value={initialSong.id} />}
       {mode === 'edit' && initialSong && (
-        <input type="hidden" name="existingCover" value={initialSong.cover} />
+        <>
+          <input type="hidden" name="id" value={initialSong.id} />
+          <input type="hidden" name="existingCoverURL" value={initialSong.coverURL} />
+          <input type="hidden" name="existingCoverPublicId" value={initialSong.coverPublicId} />
+        </>
       )}
 
       {formFields.map((field) => (

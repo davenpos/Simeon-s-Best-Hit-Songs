@@ -8,7 +8,8 @@ export interface AdminSong {
   hot_100_pos: number;
   album: string | null;
   albumNote: string | null;
-  cover: string;
+  coverURL: string;
+  coverPublicId: string;
   genre: string;
   label: string | null;
 }
@@ -28,7 +29,8 @@ export interface SongDetails {
   hot_100_pos: number;
   album: string | null;
   albumNote: string | null;
-  cover: string;
+  coverURL: string;
+  coverPublicId: string;
   genre: string;
   label: string | null;
 }

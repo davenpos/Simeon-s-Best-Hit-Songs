@@ -19,7 +19,7 @@ export default function AlertBanner({
 }) {
   return (
     <div
-      className={`fixed inset-x-0 top-4 z-50 flex justify-center px-4 transition-all duration-300 ease-out ${
+      className={`fixed inset-x-0 top-4 z-[100] flex justify-center px-4 transition-all duration-300 ease-out ${
         visible
           ? 'opacity-100 translate-y-0 scale-100'
           : 'opacity-0 -translate-y-6 scale-95 pointer-events-none'

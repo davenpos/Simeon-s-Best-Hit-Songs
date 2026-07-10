@@ -19,7 +19,7 @@ export default function SongModal({
     <Modal isClosing={isClosing} onClose={onClose} titleId="song-modal-title" sizeClass="max-w-lg">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
         <img
-          src={song.cover}
+          src={song.coverURL}
           alt={`${song.title} cover`}
           className="mx-auto h-40 w-40 shrink-0 rounded-md sm:mx-0"
         />
