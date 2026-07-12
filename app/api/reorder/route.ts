@@ -7,7 +7,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const songId = parseInt(body.songId, 10);
     const fromRank = parseInt(body.fromRank, 10);
-    const toRank = parseInt(body.toRank, 10);
+    let toRank = parseInt(body.toRank, 10);
 
     if (!songId || !fromRank || !toRank) {
       return NextResponse.json({ message: 'Missing reorder fields' }, { status: 400 });
@@ -22,10 +22,17 @@ export async function POST(req: NextRequest) {
       });
 
       if (fromRank < toRank) {
+        toRank--;
         await tx.$executeRaw`
           UPDATE "Song"
-          SET rank = rank - 1
+          SET rank = rank + 1000000
           WHERE rank > ${fromRank} AND rank <= ${toRank}
+        `;
+
+        await tx.$executeRaw`
+          UPDATE "Song"
+          SET rank = rank - 1000001
+          WHERE rank > ${fromRank + 1000000}
         `;
       } else {
         await tx.$executeRaw`
