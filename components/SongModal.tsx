@@ -53,7 +53,7 @@ export default function SongModal({
         <SongDetail term="Year" details={song.year} />
         <SongDetail term="Genre" details={song.genre} />
         <SongDetail term="Year-end position" details={`#${song.year_end_pos}`} />
-        <SongDetail term="Year-end position" details={`#${song.hot_100_pos}`} />
+        <SongDetail term="Hot 100 position" details={`#${song.hot_100_pos}`} />
         <SongDetail
           term="Album"
           details={
