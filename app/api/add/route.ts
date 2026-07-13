@@ -2,6 +2,7 @@ import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import parseSongFormData from '@/functions/parseSongFormData';
 import { prisma } from '@/lib/prisma';
+import pushSongsDown from '@/functions/pushSongsDown';
 
 export async function POST(req: NextRequest) {
   try {
@@ -36,20 +37,7 @@ export async function POST(req: NextRequest) {
         });
 
         rank = highest ? highest.rank + 1 : 1;
-      } else {
-        const songsToShift = await tx.song.findMany({
-          where: { rank: { gte: rank } },
-          orderBy: { rank: 'desc' },
-          select: { id: true, rank: true },
-        });
-
-        for (const song of songsToShift) {
-          await tx.song.update({
-            where: { id: song.id },
-            data: { rank: song.rank + 1 },
-          });
-        }
-      }
+      } else await pushSongsDown(tx, rank);
 
       await tx.song.create({
         data: {

@@ -1,6 +1,7 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import pushSongsDown from '@/functions/pushSongsDown';
 
 export async function POST(req: NextRequest) {
   try {
@@ -34,19 +35,7 @@ export async function POST(req: NextRequest) {
           SET rank = rank - 1000001
           WHERE rank > ${fromRank + 1000000}
         `;
-      } else {
-        await tx.$executeRaw`
-          UPDATE "Song"
-          SET rank = rank + 1000000
-          WHERE rank >= ${toRank} AND rank < ${fromRank}
-        `;
-
-        await tx.$executeRaw`
-          UPDATE "Song"
-          SET rank = rank - 999999
-          WHERE rank >= ${toRank + 1000000}
-        `;
-      }
+      } else await pushSongsDown(tx, toRank, fromRank);
 
       await tx.song.update({
         where: { id: songId },
