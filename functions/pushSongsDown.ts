@@ -7,10 +7,8 @@ export default async function pushSongsDown(
     '$connect' | '$disconnect' | '$on' | '$use' | '$extends'
   >,
   start: number,
-  stop?: number,
+  stop: number = 1000000,
 ) {
-  if (!stop) stop = 1000000;
-
   await tx.$executeRaw`
     UPDATE "Song"
     SET rank = rank + 1000000
