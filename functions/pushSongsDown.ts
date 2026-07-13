@@ -9,19 +9,13 @@ export default async function pushSongsDown(
   start: number,
   stop?: number,
 ) {
-  if (stop) {
-    await tx.$executeRaw`
-      UPDATE "Song"
-      SET rank = rank + 1000000
-      WHERE rank >= ${start} AND rank < ${stop}
-    `;
-  } else {
-    await tx.$executeRaw`
-      UPDATE "Song"
-      SET rank = rank + 1000000
-      WHERE rank >= ${start}
-    `;
-  }
+  if (!stop) stop = 1000000;
+
+  await tx.$executeRaw`
+    UPDATE "Song"
+    SET rank = rank + 1000000
+    WHERE rank >= ${start} AND rank < ${stop}
+  `;
 
   await tx.$executeRaw`
     UPDATE "Song"
