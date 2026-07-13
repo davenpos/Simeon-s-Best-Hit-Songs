@@ -35,10 +35,17 @@ export async function POST(req: NextRequest) {
           WHERE rank > ${fromRank + 1000000}
         `;
       } else {
+        console.log(fromRank, toRank);
         await tx.$executeRaw`
           UPDATE "Song"
-          SET rank = rank + 1
+          SET rank = rank + 1000000
           WHERE rank >= ${toRank} AND rank < ${fromRank}
+        `;
+
+        await tx.$executeRaw`
+          UPDATE "Song"
+          SET rank = rank - 999999
+          WHERE rank >= ${toRank + 1000000}
         `;
       }
 
