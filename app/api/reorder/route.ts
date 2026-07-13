@@ -35,7 +35,6 @@ export async function POST(req: NextRequest) {
           WHERE rank > ${fromRank + 1000000}
         `;
       } else {
-        console.log(fromRank, toRank);
         await tx.$executeRaw`
           UPDATE "Song"
           SET rank = rank + 1000000
