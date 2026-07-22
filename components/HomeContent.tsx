@@ -6,6 +6,7 @@ import SongSearch from './SongSearch';
 import SongTable from './SongTable';
 import getDecadeStart from '@/functions/getDecadeStart';
 import { SongDetails, SongTableProps } from '@/types/interfaces';
+import { SearchMode } from '@/types/types';
 
 const DECADES = ['1990s', '2000s', '2010s'] as const;
 const BASE_TIME_BUTTONS = ['All-time', ...DECADES];
@@ -47,14 +48,18 @@ function isPaginatedView(selectedTimeId: string) {
   );
 }
 
-function filterSongsBySearch(songs: SongDetails[], query: string) {
+function filterSongsBySearch(songs: SongDetails[], query: string, mode: SearchMode) {
   const trimmed = query.trim().toLowerCase();
   if (!trimmed) return songs;
 
-  return songs.filter(
-    (song) =>
-      song.title.toLowerCase().includes(trimmed) || song.artist.toLowerCase().includes(trimmed),
-  );
+  return songs.filter((song) => {
+    const titleMatch = song.title.toLowerCase().includes(trimmed);
+    const artistMatch = song.artist.toLowerCase().includes(trimmed);
+
+    if (mode === 'title') return titleMatch;
+    if (mode === 'artist') return artistMatch;
+    return titleMatch || artistMatch;
+  });
 }
 
 export default function HomeContent({ songs }: SongTableProps) {
@@ -66,6 +71,7 @@ export default function HomeContent({ songs }: SongTableProps) {
   const [selectedTimeId, setSelectedTimeId] = useState('All-time');
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
+  const [searchMode, setSearchMode] = useState<SearchMode>('both');
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
 
   const visibleTimeButtons = useMemo(() => {
@@ -92,8 +98,8 @@ export default function HomeContent({ songs }: SongTableProps) {
   }, [songs, selectedTimeId]);
 
   const searchedSongs = useMemo(
-    () => filterSongsBySearch(limitedSongs, searchQuery),
-    [limitedSongs, searchQuery],
+    () => filterSongsBySearch(limitedSongs, searchQuery, searchMode),
+    [limitedSongs, searchQuery, searchMode],
   );
 
   const isSearchActive = searchQuery.trim().length > 0;
@@ -126,7 +132,7 @@ export default function HomeContent({ songs }: SongTableProps) {
 
   const isAnyModalActive = isAboutOpen || isSongModalActive;
 
-  useEffect(() => setCurrentPage(1), [selectedTimeId, searchQuery]);
+  useEffect(() => setCurrentPage(1), [selectedTimeId, searchQuery, searchMode]);
 
   useEffect(() => {
     if (currentPage > totalPages) {
@@ -197,6 +203,8 @@ export default function HomeContent({ songs }: SongTableProps) {
           <SongSearch
             value={searchQuery}
             onChange={setSearchQuery}
+            searchMode={searchMode}
+            onSearchModeChange={setSearchMode}
             isExpanded={isSearchExpanded}
             onExpandedChange={setIsSearchExpanded}
             disabled={isAnyModalActive}
