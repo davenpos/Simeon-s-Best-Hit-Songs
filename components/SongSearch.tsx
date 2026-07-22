@@ -44,9 +44,7 @@ export default function SongSearch({
 
     function handlePointerDown(event: MouseEvent) {
       if (!containerRef.current?.contains(event.target as Node)) {
-        if (!value.trim()) {
-          onExpandedChange(false);
-        }
+        if (!value.trim()) onExpandedChange(false);
       }
     }
 
@@ -68,13 +66,8 @@ export default function SongSearch({
 
   function handleToggle() {
     if (disabled) return;
-
-    if (isExpanded && !value.trim()) {
-      onExpandedChange(false);
-      return;
-    }
-
-    onExpandedChange(true);
+    if (isExpanded && !value.trim()) onExpandedChange(false);
+    else onExpandedChange(true);
   }
 
   return (
