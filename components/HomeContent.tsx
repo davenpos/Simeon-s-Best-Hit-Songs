@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import AboutModal from './AboutModal';
 import Pagination from './Pagination';
+import SongSearch from './SongSearch';
 import SongTable from './SongTable';
 import getDecadeStart from '@/functions/getDecadeStart';
 import { SongDetails, SongTableProps } from '@/types/interfaces';
@@ -46,6 +47,16 @@ function isPaginatedView(selectedTimeId: string) {
   );
 }
 
+function filterSongsBySearch(songs: SongDetails[], query: string) {
+  const trimmed = query.trim().toLowerCase();
+  if (!trimmed) return songs;
+
+  return songs.filter(
+    (song) =>
+      song.title.toLowerCase().includes(trimmed) || song.artist.toLowerCase().includes(trimmed),
+  );
+}
+
 export default function HomeContent({ songs }: SongTableProps) {
   const closeTimeoutRef = useRef<number | null>(null);
 
@@ -54,6 +65,8 @@ export default function HomeContent({ songs }: SongTableProps) {
   const [isSongModalActive, setIsSongModalActive] = useState(false);
   const [selectedTimeId, setSelectedTimeId] = useState('All-time');
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isSearchExpanded, setIsSearchExpanded] = useState(false);
 
   const visibleTimeButtons = useMemo(() => {
     if (selectedTimeId === 'All-time') {
@@ -78,22 +91,27 @@ export default function HomeContent({ songs }: SongTableProps) {
     return filtered.slice(0, getSongLimit(selectedTimeId));
   }, [songs, selectedTimeId]);
 
+  const searchedSongs = useMemo(
+    () => filterSongsBySearch(limitedSongs, searchQuery),
+    [limitedSongs, searchQuery],
+  );
+
   const totalPages = useMemo(() => {
     if (!isPaginatedView(selectedTimeId)) return 1;
-    return Math.max(1, Math.ceil(limitedSongs.length / PAGE_SIZE));
-  }, [limitedSongs.length, selectedTimeId]);
+    return Math.max(1, Math.ceil(searchedSongs.length / PAGE_SIZE));
+  }, [searchedSongs.length, selectedTimeId]);
 
   const paginatedSongs = useMemo(() => {
-    if (!isPaginatedView(selectedTimeId)) return limitedSongs;
+    if (!isPaginatedView(selectedTimeId)) return searchedSongs;
     const start = (currentPage - 1) * PAGE_SIZE;
-    return limitedSongs.slice(start, start + PAGE_SIZE);
-  }, [currentPage, limitedSongs, selectedTimeId]);
+    return searchedSongs.slice(start, start + PAGE_SIZE);
+  }, [currentPage, searchedSongs, selectedTimeId]);
 
   const rankOffset = isPaginatedView(selectedTimeId) ? (currentPage - 1) * PAGE_SIZE : 0;
 
   const isAnyModalActive = isAboutOpen || isSongModalActive;
 
-  useEffect(() => setCurrentPage(1), [selectedTimeId]);
+  useEffect(() => setCurrentPage(1), [selectedTimeId, searchQuery]);
 
   useEffect(() => {
     if (currentPage > totalPages) {
@@ -160,6 +178,14 @@ export default function HomeContent({ songs }: SongTableProps) {
               </button>
             ))}
           </div>
+
+          <SongSearch
+            value={searchQuery}
+            onChange={setSearchQuery}
+            isExpanded={isSearchExpanded}
+            onExpandedChange={setIsSearchExpanded}
+            disabled={isAnyModalActive}
+          />
         </div>
       </header>
 
