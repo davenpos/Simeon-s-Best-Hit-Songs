@@ -96,6 +96,21 @@ export default function HomeContent({ songs }: SongTableProps) {
     [limitedSongs, searchQuery],
   );
 
+  const isSearchActive = searchQuery.trim().length > 0;
+
+  const originalDisplayRankBySongRank = useMemo(() => {
+    const ranks = new Map<number, number>();
+    limitedSongs.forEach((song, index) => {
+      ranks.set(song.rank, index + 1);
+    });
+    return ranks;
+  }, [limitedSongs]);
+
+  const getDisplayRank = useCallback(
+    (song: SongDetails) => originalDisplayRankBySongRank.get(song.rank) ?? song.rank,
+    [originalDisplayRankBySongRank],
+  );
+
   const totalPages = useMemo(() => {
     if (!isPaginatedView(selectedTimeId)) return 1;
     return Math.max(1, Math.ceil(searchedSongs.length / PAGE_SIZE));
@@ -192,6 +207,7 @@ export default function HomeContent({ songs }: SongTableProps) {
       <SongTable
         songs={paginatedSongs}
         rankOffset={rankOffset}
+        getDisplayRank={isSearchActive ? getDisplayRank : undefined}
         blockInteractions={isAboutOpen}
         onModalActiveChange={setIsSongModalActive}
       />
