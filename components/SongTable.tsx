@@ -4,7 +4,6 @@ import SongModal from './SongModal';
 import { SongDetails, SongTableProps } from '@/types/interfaces';
 import useWindowIsSmall from '@/hooks/useWindowIsSmall';
 import SongRank from './SongRank';
-import SongDetail from './SongDetail';
 
 export default function SongTable({
   songs,
