@@ -1,6 +1,8 @@
 import AdminSongList from '@/components/AdminSongList';
 import { prisma } from '@/lib/prisma';
 
+export const dynamic = 'force-dynamic';
+
 export default async function Page() {
   const songs = await prisma.song.findMany({
     orderBy: {
