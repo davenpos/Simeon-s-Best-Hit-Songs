@@ -6,7 +6,7 @@ import { AdminSong } from '@/types/interfaces';
 
 const formFields = [
   { name: 'title', label: 'Title:', type: 'text' as const },
-  { name: 'artist', label: 'Artist', type: 'text' as const },
+  { name: 'artist', label: 'Artist:', type: 'text' as const },
   { name: 'year', label: 'Year:', type: 'number' as const },
   { name: 'year_end_pos', label: 'Year-end position:', type: 'number' as const },
   { name: 'hot_100_pos', label: 'Hot 100 peak:', type: 'number' as const },
