@@ -62,9 +62,7 @@ export default function SongModal({
                 {songAlbums.map((album, i) => (
                   <Fragment key={i}>
                     {i > 0 && <>/</>}
-                    <span className={album !== 'Non-album single' ? 'italic' : undefined}>
-                      {album}
-                    </span>
+                    <span className="italic">{album}</span>
                     {i === 0 && <>{song.albumNote ? ` (${song.albumNote})` : ''}</>}
                   </Fragment>
                 ))}
