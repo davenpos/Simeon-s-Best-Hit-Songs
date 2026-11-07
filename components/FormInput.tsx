@@ -4,11 +4,15 @@ export default function FormInput({
   name,
   label,
   type,
+  min,
+  max,
   defaultValue,
 }: {
   name: string;
   label: string;
   type: HTMLInputTypeAttribute;
+  min?: number;
+  max?: number;
   defaultValue?: string | number;
 }) {
   return (
@@ -20,6 +24,8 @@ export default function FormInput({
         id={name}
         {...(type !== 'file' ? { defaultValue } : {})}
         className="bg-white text-black px-1"
+        min={min}
+        max={max}
       />
     </>
   );
