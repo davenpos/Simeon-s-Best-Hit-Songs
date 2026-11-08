@@ -1,4 +1,6 @@
 'use client';
+import { EllipsisId } from '@/types/types';
+import { useEffect, useRef, useState } from 'react';
 
 function PaginationButton({
   onClick,
@@ -26,6 +28,103 @@ function PaginationButton({
   );
 }
 
+function PaginationEllipsis({
+  id,
+  openId,
+  onOpenChange,
+  totalPages,
+  onPageChange,
+  disabled,
+}: {
+  id: EllipsisId;
+  openId: EllipsisId | null;
+  onOpenChange: (id: EllipsisId | null) => void;
+  totalPages: number;
+  onPageChange: (page: number) => void;
+  disabled: boolean;
+}) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [value, setValue] = useState('');
+  const isOpen = openId === id;
+
+  useEffect(() => {
+    if (!isOpen) return;
+    inputRef.current?.focus();
+    inputRef.current?.select();
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handlePointerDown = (event: MouseEvent) => {
+      if (containerRef.current?.contains(event.target as Node)) return;
+      onOpenChange(null);
+      setValue('');
+    };
+
+    document.addEventListener('mousedown', handlePointerDown);
+    return () => document.removeEventListener('mousedown', handlePointerDown);
+  }, [isOpen, onOpenChange]);
+
+  const close = () => {
+    onOpenChange(null);
+    setValue('');
+  };
+
+  const submit = () => {
+    const parsed = Number.parseInt(value.trim(), 10);
+    if (!Number.isNaN(parsed)) {
+      const page = Math.min(Math.max(1, parsed), totalPages);
+      onPageChange(page);
+    }
+    close();
+  };
+
+  return (
+    <div ref={containerRef} className="relative">
+      {isOpen && (
+        <div className="absolute bottom-full left-1/2 z-10 mb-1 -translate-x-1/2">
+          <input
+            ref={inputRef}
+            type="text"
+            inputMode="numeric"
+            pattern="[0-9]*"
+            value={value}
+            onChange={(event) => setValue(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter') {
+                event.preventDefault();
+                submit();
+              }
+              if (event.key === 'Escape') {
+                event.preventDefault();
+                close();
+              }
+            }}
+            aria-label={`Go to page between 1 and ${totalPages}`}
+            placeholder={`1–${totalPages}`}
+            className="w-20 rounded-full border border-white/20 bg-white px-2 py-1 text-center text-sm text-black shadow-sm tabular-nums outline-none focus:ring-2 focus:ring-lime-600/80"
+          />
+        </div>
+      )}
+      <PaginationButton
+        onClick={() => {
+          if (disabled) return;
+          if (isOpen) close();
+          else {
+            setValue('');
+            onOpenChange(id);
+          }
+        }}
+        disabled={disabled}
+        className="bg-lime-500 px-2"
+        text="..."
+      />
+    </div>
+  );
+}
+
 export default function Pagination({
   currentPage,
   totalPages,
@@ -38,6 +137,9 @@ export default function Pagination({
   disabled?: boolean;
 }) {
   if (totalPages <= 1) return null;
+
+  const [openEllipsis, setOpenEllipsis] = useState<EllipsisId | null>(null);
+  useEffect(() => setOpenEllipsis(null), [currentPage]);
 
   return (
     <nav
@@ -71,6 +173,7 @@ export default function Pagination({
             (_, index) => index + 1,
           ).map((page) => (
             <PaginationButton
+              key={page}
               onClick={() => onPageChange(page)}
               disabled={disabled}
               className={`min-w-8 px-2 ${page === currentPage ? 'bg-lime-300' : 'bg-lime-500'}`}
@@ -80,9 +183,14 @@ export default function Pagination({
           ))}
 
           {currentPage - 3 > 3 && (
-            <div className="rounded-full py-1 text-sm shadow-sm transition-all duration-300 bg-lime-500 px-2">
-              ...
-            </div>
+            <PaginationEllipsis
+              id="leading"
+              openId={openEllipsis}
+              onOpenChange={setOpenEllipsis}
+              totalPages={totalPages}
+              onPageChange={onPageChange}
+              disabled={disabled}
+            />
           )}
 
           {currentPage - 3 > 3 &&
@@ -99,9 +207,14 @@ export default function Pagination({
             ))}
 
           {currentPage + 3 < totalPages - 2 && (
-            <div className="rounded-full py-1 text-sm shadow-sm transition-all duration-300 bg-lime-500 px-2">
-              ...
-            </div>
+            <PaginationEllipsis
+              id="trailing"
+              openId={openEllipsis}
+              onOpenChange={setOpenEllipsis}
+              totalPages={totalPages}
+              onPageChange={onPageChange}
+              disabled={disabled}
+            />
           )}
 
           {Array.from(
