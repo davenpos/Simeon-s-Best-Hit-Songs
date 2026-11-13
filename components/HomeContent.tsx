@@ -11,12 +11,16 @@ import { SearchMode } from '@/types/types';
 const DECADES = ['1990s', '2000s', '2010s', '2020s'] as const;
 const BASE_TIME_BUTTONS = ['All-time', ...DECADES];
 const PAGE_SIZE = 20;
+const finalDecade = parseInt(DECADES.at(-1).slice(0, 4), 10);
 const upToYearOfCurrDecade = 6;
 
 function getYearButtonsForDecade(decadeLabel: string) {
-  const decadeStart = parseInt(decadeLabel.slice(0, -1), 10);
+  const decadeStart = parseInt(decadeLabel.slice(0, 4), 10);
+
   return Array.from(
-    { length: decadeStart === parseInt(DECADES.at(-1).slice(0, 4)) ? upToYearOfCurrDecade : 10 },
+    {
+      length: decadeStart === 1959 ? 1 : decadeStart === finalDecade ? upToYearOfCurrDecade : 10,
+    },
     (_, index) => String(decadeStart + index),
   );
 }
@@ -26,11 +30,10 @@ function filterSongsByTimeId(songs: SongDetails[], selectedTimeId: string) {
 
   if (DECADES.includes(selectedTimeId as (typeof DECADES)[number])) {
     const decadeStart = parseInt(selectedTimeId.slice(0, 4), 10);
-    // const decadeEnd =
-    //   decadeStart === 1959
-    //     ? 1959
-    //     : decadeStart + (decadeStart === 2020 ? upToYearOfCurrDecade - 1 : 9);
-    const decadeEnd = decadeStart + (decadeStart === 2020 ? upToYearOfCurrDecade - 1 : 9);
+    const decadeEnd =
+      decadeStart === 1959
+        ? 1959
+        : decadeStart + (decadeStart === finalDecade ? upToYearOfCurrDecade - 1 : 9);
     return songs.filter((song) => song.year >= decadeStart && song.year <= decadeEnd);
   }
 
