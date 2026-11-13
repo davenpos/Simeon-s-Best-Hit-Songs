@@ -15,8 +15,9 @@ const upToYearOfCurrDecade = 6;
 
 function getYearButtonsForDecade(decadeLabel: string) {
   const decadeStart = parseInt(decadeLabel.slice(0, -1), 10);
-  return Array.from({ length: decadeStart === 2020 ? upToYearOfCurrDecade : 10 }, (_, index) =>
-    String(decadeStart + index),
+  return Array.from(
+    { length: decadeStart === parseInt(DECADES.at(-1).slice(0, 4)) ? upToYearOfCurrDecade : 10 },
+    (_, index) => String(decadeStart + index),
   );
 }
 
