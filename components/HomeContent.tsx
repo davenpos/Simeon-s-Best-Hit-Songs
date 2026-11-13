@@ -21,14 +21,11 @@ function getYearButtonsForDecade(decadeLabel: string) {
 }
 
 function filterSongsByTimeId(songs: SongDetails[], selectedTimeId: string) {
-  if (selectedTimeId === 'All-time') {
-    return songs;
-  }
+  if (selectedTimeId === 'All-time') return songs;
 
   if (DECADES.includes(selectedTimeId as (typeof DECADES)[number])) {
     const decadeStart = parseInt(selectedTimeId.slice(0, -1), 10);
     const decadeEnd = decadeStart + (decadeStart === 2020 ? upToYearOfCurrDecade - 1 : 9);
-    console.log(decadeEnd);
     return songs.filter((song) => song.year >= decadeStart && song.year <= decadeEnd);
   }
 
@@ -96,25 +93,28 @@ export default function HomeContent({ songs }: SongTableProps) {
     return BASE_TIME_BUTTONS;
   }, [selectedTimeId]);
 
-  const limitedSongs = useMemo(() => {
-    const filtered = filterSongsByTimeId(songs, selectedTimeId);
-    return filtered.slice(0, getSongLimit(selectedTimeId));
-  }, [songs, selectedTimeId]);
-
-  const searchedSongs = useMemo(
-    () => filterSongsBySearch(limitedSongs, searchQuery, searchMode),
-    [limitedSongs, searchQuery, searchMode],
+  const timeFilteredSongs = useMemo(
+    () => filterSongsByTimeId(songs, selectedTimeId),
+    [songs, selectedTimeId],
   );
 
   const isSearchActive = searchQuery.trim().length > 0;
 
+  const searchedSongs = useMemo(() => {
+    const limit = getSongLimit(selectedTimeId);
+    const pool = isSearchActive
+      ? filterSongsBySearch(timeFilteredSongs, searchQuery, searchMode)
+      : timeFilteredSongs;
+    return pool.slice(0, limit);
+  }, [timeFilteredSongs, selectedTimeId, searchQuery, searchMode, isSearchActive]);
+
   const originalDisplayRankBySongRank = useMemo(() => {
     const ranks = new Map<number, number>();
-    limitedSongs.forEach((song, index) => {
+    timeFilteredSongs.forEach((song, index) => {
       ranks.set(song.rank, index + 1);
     });
     return ranks;
-  }, [limitedSongs]);
+  }, [timeFilteredSongs]);
 
   const getDisplayRank = useCallback(
     (song: SongDetails) => originalDisplayRankBySongRank.get(song.rank) ?? song.rank,
