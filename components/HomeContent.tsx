@@ -24,7 +24,11 @@ function filterSongsByTimeId(songs: SongDetails[], selectedTimeId: string) {
   if (selectedTimeId === 'All-time') return songs;
 
   if (DECADES.includes(selectedTimeId as (typeof DECADES)[number])) {
-    const decadeStart = parseInt(selectedTimeId.slice(0, -1), 10);
+    const decadeStart = parseInt(selectedTimeId.slice(0, 4), 10);
+    // const decadeEnd =
+    //   decadeStart === 1959
+    //     ? 1959
+    //     : decadeStart + (decadeStart === 2020 ? upToYearOfCurrDecade - 1 : 9);
     const decadeEnd = decadeStart + (decadeStart === 2020 ? upToYearOfCurrDecade - 1 : 9);
     return songs.filter((song) => song.year >= decadeStart && song.year <= decadeEnd);
   }
