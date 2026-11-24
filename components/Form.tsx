@@ -63,7 +63,7 @@ export default function Form({
       : null;
 
   return (
-    <form onSubmit={onSubmit} className="grid grid-cols-2 gap-y-2 pr-8">
+    <form onSubmit={onSubmit} className="grid grid-cols-2 gap-y-2 pr-8" autoComplete="off">
       {mode === 'add' && rank !== undefined && <input type="hidden" name="rank" value={rank} />}
       {mode === 'edit' && initialSong && (
         <>

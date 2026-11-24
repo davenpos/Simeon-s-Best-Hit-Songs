@@ -26,6 +26,7 @@ export default function FormInput({
         className="bg-white text-black px-1"
         min={min}
         max={max}
+        autoComplete="off"
       />
     </>
   );
