@@ -16,13 +16,17 @@ export default function Modal({
   children: ReactNode;
 }) {
   const [isZoomedIn, setIsZoomedIn] = useState(false);
+  const isOpen = isZoomedIn && !isClosing;
 
   useEffect(() => {
     const id = requestAnimationFrame(() => setIsZoomedIn(true));
     return () => cancelAnimationFrame(id);
   }, []);
 
-  const isOpen = isZoomedIn && !isClosing;
+  useEffect(() => {
+    if (isOpen) document.body.style.overflow = 'hidden';
+    else document.body.style.overflow = '';
+  }, [isOpen]);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
